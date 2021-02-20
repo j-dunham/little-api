@@ -1,5 +1,7 @@
-from typing import Dict, Callable, Iterator, Optional
+from typing import Dict, Callable, Iterator, Optional, Tuple
 from webob import Request, Response
+from parse import parse
+import inspect
 
 
 class API:
@@ -12,21 +14,29 @@ class API:
         return response(environ, start_response)
 
     def route(self, path) -> Callable:
+        assert path not in self.routes, f"Duplicate route found: {path}"
+
         def wrapper(handler):
             self.routes[path] = handler
             return handler
+
         return wrapper
 
-    def find_handler(self, request_path) -> Optional[Callable]:
+    def find_handler(self, request_path) -> Tuple:
         for path, handler in self.routes.items():
-            if path == request_path.path:
-                return handler
+            parse_result = parse(path, request_path)
+            if parse_result is not None:
+                return handler, parse_result.named
+        return None, None
 
     def handle_request(self, request: Request) -> Response:
         response = Response()
-        handler = self.find_handler(request)
+        handler, kwargs = self.find_handler(request_path=request.path)
         if handler is not None:
-            handler(request, response)
+            if inspect.isclass(handler):
+                handler = getattr(handler(), request.method.lower(), None)
+                assert handler is not None, f"Method not allow: {request.method}"
+            handler(request, response, **kwargs)
         else:
             self.default_response(response)
         return response

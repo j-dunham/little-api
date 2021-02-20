@@ -1,4 +1,8 @@
+# Application
 gunicorn
-webob
+webob # https://docs.pylonsproject.org/projects/webob/en/stable/index.html
+parse # https://github.com/r1chardj0n3s/parse
 
+# Code Quality
 black
+mypy
