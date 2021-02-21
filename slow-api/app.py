@@ -34,9 +34,24 @@ def template_render(req: Request, resp: Response):
     )
 
 
+# exception example
+
+def custom_exception_handler(req: Request, resp: Response, exc_cls: Exception):
+    resp.text = str(exc_cls)
+
+
+app.add_exception_handler(custom_exception_handler)
+
+
+@app.route("/exception")
+def throw_exception(req: Request, resp: Response):
+    raise AssertionError("This route should not be used")
+
+
 # Non decorator example
 def index(req: Request, resp: Response):
     resp.text = "This is the index page"
 
 
 app.add_route("/", index)
+
