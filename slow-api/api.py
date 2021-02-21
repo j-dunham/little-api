@@ -2,6 +2,8 @@ from typing import Dict, Callable, Iterator, Optional, Tuple
 from webob import Request, Response
 from parse import parse
 import inspect
+from requests import Session as RequestsSession
+from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
 
 
 class API:
@@ -35,7 +37,8 @@ class API:
         if handler is not None:
             if inspect.isclass(handler):
                 handler = getattr(handler(), request.method.lower(), None)
-                assert handler is not None, f"Method not allow: {request.method}"
+                if handler is None:
+                    raise AttributeError(f"Method not allow: {request.method}")
             handler(request, response, **kwargs)
         else:
             self.default_response(response)
@@ -44,3 +47,8 @@ class API:
     def default_response(self, response: Response) -> None:
         response.status_code = 404
         response.text = "Not Found.."
+
+    def test_session(self, base_url="http://testserver"):
+        session = RequestsSession()
+        session.mount(prefix=base_url, adapter=RequestsWSGIAdapter(self))
+        return session
