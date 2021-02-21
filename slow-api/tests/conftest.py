@@ -1,5 +1,4 @@
 import pytest
-
 from api import API
 
 

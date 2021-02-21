@@ -1,8 +1,9 @@
-from typing import Dict, Callable, Iterator, Optional, Tuple
-from webob import Request, Response
-from parse import parse
 import inspect
+from typing import Callable, Dict, Iterator, Tuple
+
+from parse import parse
 from requests import Session as RequestsSession
+from webob import Request, Response
 from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
 
 
@@ -15,13 +16,14 @@ class API:
         response = self.handle_request(request)
         return response(environ, start_response)
 
-    def route(self, path) -> Callable:
+    def add_route(self, path, handler):
         assert path not in self.routes, f"Duplicate route found: {path}"
+        self.routes[path] = handler
 
+    def route(self, path) -> Callable:
         def wrapper(handler):
-            self.routes[path] = handler
+            self.add_route(path, handler)
             return handler
-
         return wrapper
 
     def find_handler(self, request_path) -> Tuple:

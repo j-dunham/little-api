@@ -1,5 +1,6 @@
-from .api import API
 from webob import Request, Response
+
+from .api import API
 
 app = API()
 
@@ -23,3 +24,11 @@ class BookResource:
 
     def post(self, req, resp):
         resp.text = "Create Books Page"
+
+
+# Non decorator example
+def index(req, resp):
+    resp.text = "This is the index page"
+
+
+app.add_route("/", index)

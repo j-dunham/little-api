@@ -1,6 +1,6 @@
 import pytest
 
-
+BASE_URL = "http://testserver"
 def test_basic_route_adding(api):
     @api.route("/home")
     def home(req, resp):
@@ -26,7 +26,7 @@ def test_test_client_can_send_request(api, client):
     def cool(req, resp):
         resp.text = response_text
 
-    assert client.get("http://testserver/hey").text == response_text
+    assert client.get(f"{BASE_URL}/hey").text == response_text
 
 
 def test_parameterized_route(api, client):
@@ -34,12 +34,12 @@ def test_parameterized_route(api, client):
     def hello(req, resp, name):
         resp.text = f"hey {name}"
 
-    assert client.get("http://testserver/matthew").text == "hey matthew"
-    assert client.get("http://testserver/mary").text == "hey mary"
+    assert client.get(f"{BASE_URL}/matthew").text == "hey matthew"
+    assert client.get(f"{BASE_URL}/mary").text == "hey mary"
 
 
 def test_default_404_response(client):
-    response = client.get("http://testserver/foo")
+    response = client.get(f"{BASE_URL}/foo")
     assert response.status_code == 404
     assert response.text == "Not Found.."
 
@@ -52,7 +52,7 @@ def test_class_base_handler_get(api, client):
         def get(self, req, resp):
             resp.text = response_text
 
-    assert client.get("http://testserver/book").text == response_text
+    assert client.get(f"{BASE_URL}/book").text == response_text
 
 
 def test_client_base_handler_post(api, client):
@@ -63,7 +63,7 @@ def test_client_base_handler_post(api, client):
         def post(self, req, resp):
             resp.text = response_text
 
-    assert client.post("http://testserver/book").text == response_text
+    assert client.post(f"{BASE_URL}/book").text == response_text
 
 
 def test_class_based_handler_not_allowed_method(api, client):
@@ -73,4 +73,14 @@ def test_class_based_handler_not_allowed_method(api, client):
             resp.text = "yolo"
 
     with pytest.raises(AttributeError):
-        client.get("http://testserver/book")
+        client.get(f"{BASE_URL}/book")
+
+
+def test_add_route_func(api, client):
+    response_text = "Alternative way to add a route"
+
+    def home(req, resp):
+        resp.text = response_text
+
+    api.add_route("/alternative", home)
+    assert client.get(f"{BASE_URL}/alternative").text == response_text
