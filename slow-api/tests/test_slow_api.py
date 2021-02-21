@@ -1,6 +1,7 @@
 import pytest
+from tests.conftest import BASE_URL
 
-BASE_URL = "http://testserver"
+
 def test_basic_route_adding(api):
     @api.route("/home")
     def home(req, resp):

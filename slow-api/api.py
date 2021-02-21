@@ -1,6 +1,8 @@
 import inspect
-from typing import Callable, Dict, Iterator, Tuple
+import os
+from typing import Callable, Dict, Iterator, Optional, Tuple
 
+from jinja2 import Environment, FileSystemLoader
 from parse import parse
 from requests import Session as RequestsSession
 from webob import Request, Response
@@ -8,8 +10,11 @@ from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
 
 
 class API:
-    def __init__(self):
+    def __init__(self, templates_dir="templates"):
         self.routes = {}
+        self.templates_env = Environment(
+            loader=FileSystemLoader(os.path.abspath(templates_dir))
+        )
 
     def __call__(self, environ: Dict, start_response: Callable) -> Iterator:
         request = Request(environ)
@@ -24,6 +29,7 @@ class API:
         def wrapper(handler):
             self.add_route(path, handler)
             return handler
+
         return wrapper
 
     def find_handler(self, request_path) -> Tuple:
@@ -54,3 +60,8 @@ class API:
         session = RequestsSession()
         session.mount(prefix=base_url, adapter=RequestsWSGIAdapter(self))
         return session
+
+    def template(self, template_name, context: Optional[Dict] = None):
+        if context is None:
+            context = {}
+        return self.templates_env.get_template(template_name).render(**context).encode()

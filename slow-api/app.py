@@ -19,15 +19,23 @@ def about(request: Request, response: Response) -> None:
 # Class based handler examples
 @app.route("/book")
 class BookResource:
-    def get(self, req, resp):
+    def get(self, req: Request, resp: Response):
         resp.text = "Get Books Page"
 
-    def post(self, req, resp):
+    def post(self, req: Request, resp: Response):
         resp.text = "Create Books Page"
 
 
+# template example
+@app.route("/template")
+def template_render(req: Request, resp: Response):
+    resp.body = app.template(
+        "index.html", context={"name": "Slow-Api", "title": "Best Framework"}
+    )
+
+
 # Non decorator example
-def index(req, resp):
+def index(req: Request, resp: Response):
     resp.text = "This is the index page"
 
 
