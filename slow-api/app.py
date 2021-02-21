@@ -36,6 +36,7 @@ def template_render(req: Request, resp: Response):
 
 # exception example
 
+
 def custom_exception_handler(req: Request, resp: Response, exc_cls: Exception):
     resp.text = str(exc_cls)
 
@@ -54,4 +55,3 @@ def index(req: Request, resp: Response):
 
 
 app.add_route("/", index)
-
