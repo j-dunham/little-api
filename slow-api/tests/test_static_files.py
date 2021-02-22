@@ -13,7 +13,7 @@ def _create_static(static_dir):
 
 
 def test_404_is_returned_for_missing_static_file(client):
-    assert client.get(f"{BASE_URL}/main.css").status_code == 404
+    assert client.get(f"{BASE_URL}/test.css").status_code == 404
 
 
 def test_assets_are_served(tmpdir_factory):
