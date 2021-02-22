@@ -5,6 +5,7 @@ parse # https://github.com/r1chardj0n3s/parse
 requests
 requests-wsgi-adapter
 jinja2
+whitenoise
 
 # Code Quality
 black
