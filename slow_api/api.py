@@ -26,7 +26,7 @@ class API:
         path_info = environ["PATH_INFO"]
 
         if path_info.startswith("/static"):
-            environ["PATH_INFO"] = path_info[len("/static"):]
+            environ["PATH_INFO"] = path_info[len("/static") :]  # noqa
             return self.white_noise(environ, start_response)
 
         return self.middleware(environ, start_response)
