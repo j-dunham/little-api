@@ -1,5 +1,6 @@
 import pytest
-from tests.conftest import BASE_URL
+
+from slow_api.tests.conftest import BASE_URL
 
 
 def test_basic_route_adding(api):

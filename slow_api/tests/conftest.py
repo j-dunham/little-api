@@ -1,5 +1,6 @@
 import pytest
-from api import API
+
+from slow_api.api import API
 
 
 @pytest.fixture

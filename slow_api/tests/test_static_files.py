@@ -1,5 +1,5 @@
-from api import API
-from tests.conftest import BASE_URL
+from slow_api.api import API
+from slow_api.tests.conftest import BASE_URL
 
 FILE_DIR = "css"
 FILE_NAME = "main.css"
@@ -13,7 +13,7 @@ def _create_static(static_dir):
 
 
 def test_404_is_returned_for_missing_static_file(client):
-    assert client.get(f"{BASE_URL}/test.css").status_code == 404
+    assert client.get(f"{BASE_URL}/static/test.css").status_code == 404
 
 
 def test_assets_are_served(tmpdir_factory):
@@ -22,7 +22,7 @@ def test_assets_are_served(tmpdir_factory):
     api = API(static_dir=str(static_dir))
     client = api.test_session()
 
-    response = client.get(f"{BASE_URL}/{FILE_DIR}/{FILE_NAME}")
+    response = client.get(f"{BASE_URL}/static/{FILE_DIR}/{FILE_NAME}")
 
     assert response.status_code == 200
     assert response.text == FILE_CONTENT

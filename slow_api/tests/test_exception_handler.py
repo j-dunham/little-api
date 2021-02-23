@@ -1,4 +1,4 @@
-from tests.conftest import BASE_URL
+from slow_api.tests.conftest import BASE_URL
 
 
 def test_custom_exception_handler(api, client):
