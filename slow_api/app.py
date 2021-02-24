@@ -7,7 +7,7 @@ app = API()
 
 
 # Function based handler examples
-@app.route("/home/{name:w}")
+@app.route("/home/{name:w}", allowed_methods=["get"])
 def home(request: Request, response: Response, name) -> None:
     response.text = f"Hello, {name}"
 

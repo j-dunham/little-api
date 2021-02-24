@@ -43,32 +43,39 @@ class API:
         # TODO change to be a dict to look up and handle different exceptions
         self.exception_handler = exception_handler
 
-    def add_route(self, path, handler):
+    def add_route(self, path, handler, allowed_methods=None):
         assert path not in self.routes, f"Duplicate route found: {path}"
-        self.routes[path] = handler
+        if allowed_methods is None:
+            allowed_methods = ["get", "post", "put", "patch", "delete", "options"]
+        self.routes[path] = {"handler": handler, "allowed_methods": allowed_methods}
 
-    def route(self, path) -> Callable:
+    def route(self, path, allowed_methods=None) -> Callable:
         def wrapper(handler):
-            self.add_route(path, handler)
+            self.add_route(path, handler, allowed_methods)
             return handler
 
         return wrapper
 
     def find_handler(self, request_path) -> Tuple:
-        for path, handler in self.routes.items():
+        for path, handler_data in self.routes.items():
             parse_result = parse(path, request_path)
             if parse_result is not None:
-                return handler, parse_result.named
+                return handler_data, parse_result.named
         return None, None
 
     def handle_request(self, request: Request) -> Response:
         response = Response()
-        handler, kwargs = self.find_handler(request_path=request.path)
+        handler_data, kwargs = self.find_handler(request_path=request.path)
         try:
-            if handler is not None:
+            if handler_data is not None:
+                handler = handler_data["handler"]
+                allowed_methods = handler_data["allowed_methods"]
                 if inspect.isclass(handler):
                     handler = getattr(handler(), request.method.lower(), None)
-                    if handler is None:
+                if handler is None:
+                    raise AttributeError(f"Method not allow: {request.method}")
+                else:
+                    if request.method.lower() not in allowed_methods:
                         raise AttributeError(f"Method not allow: {request.method}")
                 handler(request, response, **kwargs)
             else:

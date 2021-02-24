@@ -86,3 +86,14 @@ def test_add_route_func(api, client):
 
     api.add_route("/alternative", home)
     assert client.get(f"{BASE_URL}/alternative").text == response_text
+
+
+def test_allowed_methods_for_function_based_handler(api, client):
+    @api.route("/home", allowed_methods=["post"])
+    def home(req, resp):
+        resp.text = "hello"
+
+    with pytest.raises(AttributeError):
+        client.get(f"{BASE_URL}/home")
+
+    assert client.post(f"{BASE_URL}/home").text == "hello"
