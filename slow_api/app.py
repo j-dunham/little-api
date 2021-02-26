@@ -68,3 +68,13 @@ class SimpleCustomMiddleware(Middleware):
 
 
 app.add_middleware(SimpleCustomMiddleware)
+
+
+@app.route("/json")
+def json_handler(req, resp):
+    resp.json = {"name": "data", "type": "JSON"}
+
+
+@app.route("/text")
+def text_handler(req, resp):
+    resp.text = "This is a simple text"

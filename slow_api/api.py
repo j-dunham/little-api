@@ -5,9 +5,11 @@ from typing import Callable, Dict, Iterator, Optional, Tuple
 from jinja2 import Environment, FileSystemLoader
 from parse import parse
 from requests import Session as RequestsSession
-from webob import Request, Response
+from webob import Request
 from whitenoise import WhiteNoise
 from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
+
+from slow_api.response import Response
 
 from .middleware import Middleware
 
