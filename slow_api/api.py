@@ -1,6 +1,6 @@
 import inspect
 import os
-from typing import Callable, Dict, Iterator, Optional, Tuple
+from typing import Callable, Dict, Iterator, List, Optional, Tuple, Type
 
 from jinja2 import Environment, FileSystemLoader
 from parse import parse
@@ -17,9 +17,11 @@ from .middleware import Middleware
 
 
 class API:
-    def __init__(self, templates_dir="templates", static_dir="static"):
-        self.routes = {}
-        self.exception_handlers = {}
+    def __init__(
+        self, templates_dir: str = "templates", static_dir: str = "static"
+    ) -> None:
+        self.routes: Dict = {}
+        self.exception_handlers: Dict = {}
         self.templates_env = Environment(
             loader=FileSystemLoader(os.path.abspath(templates_dir))
         )
@@ -37,31 +39,39 @@ class API:
 
         return self.middleware(environ, start_response)
 
-    def wsgi_app(self, environ, start_response) -> Iterator:
+    def wsgi_app(self, environ: dict, start_response: Callable) -> Iterator:
         request = Request(environ)
         response = self.handle_request(request)
         return response(environ, start_response)
 
-    def add_middleware(self, middleware_cls):
+    def add_middleware(self, middleware_cls: Middleware) -> None:
         self.middleware.add(middleware_cls)
 
-    def add_exception_handler(self, exception_cls, handler: Callable):
+    def add_exception_handler(
+        self, exception_cls: Type[Exception], handler: Callable
+    ) -> None:
         self.exception_handlers[exception_cls.__name__] = handler
 
-    def add_route(self, path, handler, allowed_methods=None):
+    def add_route(
+        self, path: str, handler: Callable, allowed_methods: Optional[List] = None
+    ) -> None:
+        """Adds routes to known lists of paths"""
         assert path not in self.routes, f"Duplicate route found: {path}"
         if allowed_methods is None:
             allowed_methods = ["get", "post", "put", "patch", "delete", "options"]
         self.routes[path] = {"handler": handler, "allowed_methods": allowed_methods}
 
     def route(self, path, allowed_methods=None) -> Callable:
+        """Decorator for adding routes"""
+
         def wrapper(handler):
             self.add_route(path, handler, allowed_methods)
             return handler
 
         return wrapper
 
-    def find_handler(self, request_path) -> Tuple:
+    def find_handler(self, request_path: str) -> Tuple:
+        """ Finds handler for a given url path"""
         for path, handler_data in self.routes.items():
             parse_result = parse(path, request_path)
             if parse_result is not None:
@@ -69,6 +79,7 @@ class API:
         return None, None
 
     def handle_request(self, request: Request) -> Response:
+        """Main method to handle the request"""
         response = Response()
         handler_data, kwargs = self.find_handler(request_path=request.path)
         try:
@@ -94,15 +105,17 @@ class API:
         return response
 
     def default_404_response(self, request: Request, response: Response, exc) -> None:
+        """Default response for a 404.  Can/should be overridden"""
         response.status_code = 404
         response.text = "Not Found.."
 
-    def test_session(self, base_url="http://testserver"):
+    def test_session(self, base_url="http://testserver") -> RequestsSession:
+        """Used for Testing"""
         session = RequestsSession()
         session.mount(prefix=base_url, adapter=RequestsWSGIAdapter(self))
         return session
 
-    def template(self, template_name, context: Optional[Dict] = None):
+    def template(self, template_name, context: Optional[Dict] = None) -> bytes:
         if context is None:
             context = {}
         return self.templates_env.get_template(template_name).render(**context).encode()
