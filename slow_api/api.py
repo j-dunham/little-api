@@ -11,6 +11,7 @@ from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
 
 from slow_api.response import Response
 
+from .config import Config
 from .middleware import Middleware
 
 
@@ -23,6 +24,7 @@ class API:
         )
         self.white_noise = WhiteNoise(self.wsgi_app, root=static_dir)
         self.middleware = Middleware(self)
+        self.config = Config()
 
     def __call__(self, environ: Dict, start_response: Callable) -> Iterator:
         path_info = environ["PATH_INFO"]
