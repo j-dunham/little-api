@@ -1,5 +1,6 @@
 from slow_api.api import API
-from slow_api.tests.conftest import BASE_URL
+
+from .conftest import BASE_URL
 
 FILE_DIR = "css"
 FILE_NAME = "main.css"

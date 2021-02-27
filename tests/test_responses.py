@@ -1,4 +1,4 @@
-from slow_api.tests.conftest import BASE_URL
+from .conftest import BASE_URL
 
 
 def test_json_response_helper(api, client):

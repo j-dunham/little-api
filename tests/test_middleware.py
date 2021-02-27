@@ -1,5 +1,6 @@
 from slow_api.middleware import Middleware
-from slow_api.tests.conftest import BASE_URL
+
+from .conftest import BASE_URL
 
 
 def test_middleware_methods_are_called(api, client):

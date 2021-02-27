@@ -1,7 +1,7 @@
 from webob import Request, Response
 
-from .api import API
-from .middleware import Middleware
+from slow_api.api import API
+from slow_api.middleware import Middleware
 
 app = API()
 
