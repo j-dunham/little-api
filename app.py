@@ -42,7 +42,7 @@ def custom_exception_handler(req: Request, resp: Response, exc_cls: Exception):
     resp.text = str(exc_cls)
 
 
-app.add_exception_handler(custom_exception_handler)
+app.add_exception_handler(AttributeError, custom_exception_handler)
 
 
 @app.route("/exception")

@@ -9,6 +9,7 @@ from webob import Request
 from whitenoise import WhiteNoise
 from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
 
+from slow_api.exceptions import RouteNotFoundException
 from slow_api.response import Response
 
 from .config import Config
@@ -18,13 +19,14 @@ from .middleware import Middleware
 class API:
     def __init__(self, templates_dir="templates", static_dir="static"):
         self.routes = {}
-        self.exception_handler = None
+        self.exception_handlers = {}
         self.templates_env = Environment(
             loader=FileSystemLoader(os.path.abspath(templates_dir))
         )
         self.white_noise = WhiteNoise(self.wsgi_app, root=static_dir)
         self.middleware = Middleware(self)
         self.config = Config()
+        self.add_exception_handler(RouteNotFoundException, self.default_404_response)
 
     def __call__(self, environ: Dict, start_response: Callable) -> Iterator:
         path_info = environ["PATH_INFO"]
@@ -43,9 +45,8 @@ class API:
     def add_middleware(self, middleware_cls):
         self.middleware.add(middleware_cls)
 
-    def add_exception_handler(self, exception_handler: Callable):
-        # TODO change to be a dict to look up and handle different exceptions
-        self.exception_handler = exception_handler
+    def add_exception_handler(self, exception_cls, handler: Callable):
+        self.exception_handlers[exception_cls.__name__] = handler
 
     def add_route(self, path, handler, allowed_methods=None):
         assert path not in self.routes, f"Duplicate route found: {path}"
@@ -83,16 +84,16 @@ class API:
                         raise AttributeError(f"Method not allow: {request.method}")
                 handler(request, response, **kwargs)
             else:
-                self.default_response(response)
+                raise RouteNotFoundException("Not found ..")
         except Exception as e:
-            if self.exception_handler is None:
+            handler = self.exception_handlers.get(type(e).__name__)
+            if handler is None:
                 raise e
-            else:
-                self.exception_handler(request, response, e)
+            handler(request, response, e)
 
         return response
 
-    def default_response(self, response: Response) -> None:
+    def default_404_response(self, request: Request, response: Response, exc) -> None:
         response.status_code = 404
         response.text = "Not Found.."
 
