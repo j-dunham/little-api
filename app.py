@@ -6,6 +6,16 @@ from slow_api.middleware import Middleware
 app = API()
 
 
+# After request example
+@app.after_request
+def after_response(request, response):
+    if response.json:
+        response.json = {
+            "data": response.json,
+            "success": response.status_code // 100 == 2,
+        }
+
+
 # Function based handler examples
 @app.route("/home/{name:w}", allowed_methods=["get"])
 def home(request: Request, response: Response, name) -> None:

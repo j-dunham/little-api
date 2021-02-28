@@ -29,6 +29,8 @@ class API:
         self.middleware = Middleware(self)
         self.config = Config()
         self.add_exception_handler(RouteNotFoundException, self.default_404_response)
+        self._before_request = lambda res, req: None
+        self._after_request = lambda res, req: None
 
     def __call__(self, environ: Dict, start_response: Callable) -> Iterator:
         path_info = environ["PATH_INFO"]
@@ -38,6 +40,14 @@ class API:
             return self.white_noise(environ, start_response)
 
         return self.middleware(environ, start_response)
+
+    def before_request(self, func) -> None:
+        """Methods to allow user to override"""
+        self._before_request = func
+
+    def after_request(self, func) -> None:
+        """Method to allow user to override"""
+        self._after_request = func
 
     def wsgi_app(self, environ: dict, start_response: Callable) -> Iterator:
         request = Request(environ)
@@ -81,12 +91,14 @@ class API:
     def handle_request(self, request: Request) -> Response:
         """Main method to handle the request"""
         response = Response()
+        self._before_request(request, response)
         handler_data, kwargs = self.find_handler(request_path=request.path)
         try:
             if handler_data is not None:
                 handler = handler_data["handler"]
                 allowed_methods = handler_data["allowed_methods"]
                 if inspect.isclass(handler):
+                    # if class get method off of class for http method
                     handler = getattr(handler(), request.method.lower(), None)
                 if handler is None:
                     raise AttributeError(f"Method not allow: {request.method}")
@@ -97,11 +109,11 @@ class API:
             else:
                 raise RouteNotFoundException("Not found ..")
         except Exception as e:
-            handler = self.exception_handlers.get(type(e).__name__)
-            if handler is None:
+            exception_handler = self.exception_handlers.get(type(e).__name__)
+            if exception_handler is None:
                 raise e
-            handler(request, response, e)
-
+            exception_handler(request, response, e)
+        self._after_request(request, response)
         return response
 
     def default_404_response(self, request: Request, response: Response, exc) -> None:

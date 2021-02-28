@@ -1,3 +1,5 @@
+import pytest
+
 from .conftest import BASE_URL
 
 
@@ -49,3 +51,41 @@ def test_manually_setting_body(api, client):
 
     assert "text/plain" in response.headers["Content-Type"]
     assert response.text == "Byte Body"
+
+
+def test_before_response_override(api, client):
+    @api.before_request
+    def before_request(request, response):
+        if request.headers.get("Authorization") != "Pass":
+            raise ValueError("No pass")
+
+    @api.route("/home")
+    def home(req, resp):
+        resp.json = {"testing": True}
+
+    response = client.get(f"{BASE_URL}/home", headers={"Authorization": "Pass"})
+    assert response.status_code == 200
+
+    with pytest.raises(ValueError):
+        client.get(f"{BASE_URL}/home")
+
+
+def test_after_response(api, client):
+    @api.after_request
+    def after_response(request, response):
+        if response.json:
+            response.json = {
+                "data": response.json,
+                "success": response.status_code // 100 == 2,
+            }
+
+    payload = {"value": 1}
+
+    @api.route("/home")
+    def home(req, res):
+        res.json = payload
+        res.status_code = 200
+
+    res = client.get(f"{BASE_URL}/home")
+    assert res.json()["data"] == payload
+    assert res.json()["success"] is True
