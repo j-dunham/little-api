@@ -11,6 +11,7 @@ from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
 
 from slow_api.exceptions import RouteNotFoundException
 from slow_api.response import Response
+from slow_api.utils import generate_jwt_token
 
 from .config import Config
 from .middleware import Middleware
@@ -131,3 +132,20 @@ class API:
         if context is None:
             context = {}
         return self.templates_env.get_template(template_name).render(**context).encode()
+
+    def enable_jwt_login(
+        self,
+        validate_user_func: Callable,
+        login_route: str = "/jwt/login",
+    ):
+        def jwt_login(request, response) -> None:
+            claims = validate_user_func(request)
+            if claims:
+                token = generate_jwt_token(
+                    claims, self.config["SECRET"], self.config["JWT_EXPIRE_SECONDS"]
+                )
+                response.json = {"token": token}
+            else:
+                response.status_code = 403
+
+        self.add_route(login_route, jwt_login, ["post"])

@@ -6,6 +6,7 @@ requests
 requests-wsgi-adapter
 jinja2
 whitenoise
+pyjwt
 
 # Code Quality
 black

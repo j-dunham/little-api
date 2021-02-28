@@ -1,5 +1,7 @@
 import pytest
 
+from slow_api.utils import decode_jwt_token
+
 from .conftest import BASE_URL
 
 
@@ -97,3 +99,21 @@ def test_allowed_methods_for_function_based_handler(api, client):
         client.get(f"{BASE_URL}/home")
 
     assert client.post(f"{BASE_URL}/home").text == "hello"
+
+
+def test_jwt_login_route(api, client):
+    payload = {"user": "maddie"}
+
+    def validate_user(request):
+        return payload
+
+    api.config["SECRET"] = "my_secret"
+    api.config["JWT_EXPIRE_SECONDS"] = 100
+    api.enable_jwt_login(validate_user_func=validate_user, login_route="/jwt")
+
+    response = client.post(f"{BASE_URL}/jwt")
+
+    assert response.status_code == 200
+    token = response.json()['token']
+    claims = decode_jwt_token(token, "my_secret")
+    assert claims['user'] == payload['user']

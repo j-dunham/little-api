@@ -88,3 +88,13 @@ def json_handler(req, resp):
 @app.route("/text")
 def text_handler(req, resp):
     resp.text = "This is a simple text"
+
+
+# Enable JWT Login
+def validate_user(request: Request):
+    return {"user": "foo"}
+
+
+app.config["SECRET"] = "my_secret"
+app.config["JWT_EXPIRE_SECONDS"] = 100
+app.enable_jwt_login(validate_user_func=validate_user)
