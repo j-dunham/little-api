@@ -55,7 +55,7 @@ class API:
         response = self.handle_request(request)
         return response(environ, start_response)
 
-    def add_middleware(self, middleware_cls: Middleware) -> None:
+    def add_middleware(self, middleware_cls: Type[Middleware]) -> None:
         self.middleware.add(middleware_cls)
 
     def add_exception_handler(
@@ -134,9 +134,7 @@ class API:
         return self.templates_env.get_template(template_name).render(**context).encode()
 
     def enable_jwt_login(
-        self,
-        validate_user_func: Callable,
-        login_route: str = "/jwt/login",
+        self, validate_user_func: Callable, login_route: str = "/jwt/login"
     ):
         def jwt_login(request, response) -> None:
             claims = validate_user_func(request)

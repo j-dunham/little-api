@@ -114,6 +114,6 @@ def test_jwt_login_route(api, client):
     response = client.post(f"{BASE_URL}/jwt")
 
     assert response.status_code == 200
-    token = response.json()['token']
+    token = response.json()["token"]
     claims = decode_jwt_token(token, "my_secret")
-    assert claims['user'] == payload['user']
+    assert claims["user"] == payload["user"]

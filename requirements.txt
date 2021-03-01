@@ -9,6 +9,7 @@ whitenoise
 pyjwt
 
 # Code Quality
+pre-commit
 black
 isort
 mypy

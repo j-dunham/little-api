@@ -10,7 +10,7 @@ It's a WSGI framework and can be used with any WSGI application server such as G
 pip install slow-api
 ```
 
-## Usage 
+## Usage
 
 ``` python
 from slow_api.api import API
