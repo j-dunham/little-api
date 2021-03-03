@@ -98,3 +98,8 @@ def validate_user(request: Request):
 app.config["SECRET"] = "my_secret"
 app.config["JWT_EXPIRE_SECONDS"] = 100
 app.enable_jwt_login(validate_user_func=validate_user)
+
+if __name__ == "__main__":
+    from slow_api.debug_server import DebugServer
+
+    DebugServer(application=app, port=8080).run()
