@@ -1,4 +1,4 @@
-from slow_api.exceptions import RouteNotFoundException
+from little_api.exceptions import RouteNotFoundException
 
 from .conftest import BASE_URL
 

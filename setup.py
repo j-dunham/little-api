@@ -4,8 +4,8 @@ import os
 from setuptools import find_packages, setup
 
 # Package meta-data.
-NAME = "slow-api"
-DESCRIPTION = "Slow API is a web framework that's happy with just working"
+NAME = "little-api"
+DESCRIPTION = "Little API is a web framework that's happy with just working"
 EMAIL = ""
 AUTHOR = "j dunham"
 REQUIRES_PYTHON = ">=3.6.0"
@@ -19,6 +19,8 @@ REQUIRED = [
     "requests-wsgi-adapter==0.4.1",
     "WebOb==1.8.5",
     "whitenoise==4.1.4",
+    "pyjwt==2.0.1",
+    "gunicorn==20.0.4",
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))

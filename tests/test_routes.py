@@ -1,6 +1,6 @@
 import pytest
 
-from slow_api.utils import decode_jwt_token
+from little_api.utils import decode_jwt_token
 
 from .conftest import BASE_URL
 

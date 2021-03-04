@@ -1,4 +1,4 @@
-from slow_api.api import API
+from little_api.api import API
 
 from .conftest import BASE_URL
 

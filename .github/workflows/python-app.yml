@@ -32,13 +32,13 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Run Black
       run: |
-        black --check slow_api
+        black --check little_api
     - name: Run Isort
       run: |
-        isort slow_api
+        isort little_api
     - name: Run Mypy
       run: |
-        mypy slow_api
+        mypy little_api
     - name: Test with pytest
       run: |
         pytest

@@ -11,7 +11,7 @@ class DebugServer(BaseApplication):
         self,
         application,
         server: str = "127.0.0.1",
-        port: str = "8000",
+        port: int = 8000,
         workers=1,
         timeout: int = 1000,
     ):

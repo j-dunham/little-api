@@ -1,4 +1,4 @@
-from slow_api.middleware import Middleware
+from little_api.middleware import Middleware
 
 from .conftest import BASE_URL
 

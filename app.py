@@ -1,7 +1,7 @@
 from webob import Request, Response
 
-from slow_api.api import API
-from slow_api.middleware import Middleware
+from little_api.api import API
+from little_api.middleware import Middleware
 
 app = API()
 
@@ -41,7 +41,7 @@ class BookResource:
 @app.route("/template")
 def template_render(req: Request, resp: Response):
     resp.body = app.template(
-        "index.html", context={"name": "Slow-Api", "title": "Best Framework"}
+        "index.html", context={"name": "Little-Api", "title": "Best Framework"}
     )
 
 
@@ -100,6 +100,6 @@ app.config["JWT_EXPIRE_SECONDS"] = 100
 app.enable_jwt_login(validate_user_func=validate_user)
 
 if __name__ == "__main__":
-    from slow_api.debug_server import DebugServer
+    from little_api.debug_server import DebugServer
 
     DebugServer(application=app, port=8080).run()
