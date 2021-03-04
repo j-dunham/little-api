@@ -49,3 +49,12 @@ if __name__ == "__main__":
     from little_api.debug_server import DebugServer
     DebugServer(application=app, port=8080).run()
 ```
+
+## Running with Gunicorn
+Using Gunicorn follows the standard syntax `gunicorn {OPTIONS} {WSGI_PATH}:{APP_OBJECT}`,
+where `WSGI_PATH` uses dot notation.
+```shell
+gunicorn example_app:app
+```
+_see Gunicorn [docs](https://docs.gunicorn.org/en/latest/index.html) for more
+information._
