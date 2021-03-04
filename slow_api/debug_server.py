@@ -7,8 +7,19 @@ class DebugServer(BaseApplication):
     def init(self, parser, opts, args):
         pass
 
-    def __init__(self, application, server="127.0.0.1", port="8000", workers=1):
-        self.options = {"bind": f"{server}:{port}", "workers": workers}
+    def __init__(
+        self,
+        application,
+        server: str = "127.0.0.1",
+        port: str = "8000",
+        workers=1,
+        timeout: int = 1000,
+    ):
+        self.options = {
+            "bind": f"{server}:{port}",
+            "workers": workers,
+            "timeout": timeout,
+        }
         self.application = application
         super().__init__()
 
