@@ -2,7 +2,7 @@ venv
 .idea
 __pycache__
 .coverage
-/slow_api.egg-info/
+/little_api.egg-info/
 /.eggs/
 /build/
 /dist/

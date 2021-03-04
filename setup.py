@@ -5,11 +5,11 @@ from setuptools import find_packages, setup
 
 # Package meta-data.
 NAME = "little-api"
-DESCRIPTION = "Little API is a web framework that's happy with just working"
+DESCRIPTION = "Little API the web framework that could"
 EMAIL = ""
 AUTHOR = "j dunham"
 REQUIRES_PYTHON = ">=3.6.0"
-VERSION = "0.0.3"
+VERSION = "0.0.2"
 
 # Which packages are required for this module to be executed?
 REQUIRED = [
