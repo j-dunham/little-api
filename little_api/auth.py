@@ -1,7 +1,23 @@
+import re
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
 import jwt
+
+from little_api.middleware import Middleware
+
+
+class TokenMiddleware(Middleware):
+    _regex = re.compile(r"^Token (\w+)$")
+
+    def process_request(self, request):
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
+            request.token = None
+        else:
+            match = self._regex.match(auth_header)
+            token = match and match.group(1) or None
+            request.token = token
 
 
 def generate_jwt_token(

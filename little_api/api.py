@@ -9,9 +9,9 @@ from webob import Request
 from whitenoise import WhiteNoise
 from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
 
+from little_api.auth import generate_jwt_token
 from little_api.exceptions import RouteNotFoundException
 from little_api.response import Response
-from little_api.utils import generate_jwt_token
 
 from .config import Config
 from .middleware import Middleware
