@@ -137,6 +137,12 @@ class Database:
         for row in rows:
             instance = table()
             for field, value in zip(fields, row):
+                # If foreign key create instance for it
+                if "_id" in field:
+                    field = field[:-3]
+                    # Get column off class
+                    fk = getattr(table, field)
+                    value = self.get(fk.table, id=value)[0]
                 setattr(instance, field, value)
             instances.append(instance)
         return instances

@@ -132,3 +132,18 @@ def test_get_no_result(db, Author):
         [10],
     )
     assert len(authors) == 0
+
+
+def test_foreign_key_result(db, Book, Author):
+    db.create(Author)
+    db.create(Book)
+
+    bob = Author(name="Bob", age=50)
+    book = Book(title="Bob's Book", published=True, author=bob)
+    db.save(bob)
+    db.save(book)
+
+    books = db.get(Book, title="Bob's Book")
+    assert len(books) == 1
+    assert books[0].author.name == "Bob"
+    assert books[0].author.age == 50
