@@ -25,6 +25,11 @@ class Table:
             return _column_data[key]
         return super().__getattribute__(key)
 
+    def __setattr__(self, key, value):
+        super().__setattr__(key, value)
+        if key in self._column_data:
+            self._column_data[key] = value
+
     @classmethod
     def get_create_sql(cls):
         create_sql = "CREATE TABLE IF NOT EXISTS {name} ({fields});"
@@ -77,6 +82,21 @@ class Table:
         sql = select_sql.format(fields=", ".join(fields), name=table_name)
         return sql, fields
 
+    @classmethod
+    def get_filtered_select(cls, **kwargs):
+        sql, fields = cls.get_select_all_sql()
+        sql = sql[:-1]
+        values = []
+        for idx, item in enumerate(kwargs.items()):
+            key, value = item
+            if idx == 0:
+                sql += f" WHERE {key} = ?"
+            else:
+                sql += f" AND {key} = ?"
+            values.append(value)
+        sql += ";"
+        return sql, fields, values
+
 
 class Column:
     def __init__(self, column_type):
@@ -112,13 +132,23 @@ class Database:
         table._column_data["id"] = result.lastrowid
         self.conn.commit()
 
-    def all(self, table: Type[Table]) -> List:
-        sql, fields = table.get_select_all_sql()
-        rows = self.conn.execute(sql).fetchall()
-        results = []
+    def generate_instances(self, rows, fields, table):
+        instances = []
         for row in rows:
             instance = table()
             for field, value in zip(fields, row):
                 setattr(instance, field, value)
-            results.append(instance)
-        return results
+            instances.append(instance)
+        return instances
+
+    def all(self, table: Type[Table]) -> List:
+        sql, fields = table.get_select_all_sql()
+        rows = self.conn.execute(sql).fetchall()
+        instances = self.generate_instances(rows, fields, table)
+        return instances
+
+    def get(self, table, **kwargs):
+        sql, fields, values = table.get_filtered_select(**kwargs)
+        rows = self.conn.execute(sql, tuple(values)).fetchall()
+        instances = self.generate_instances(rows, fields, table)
+        return instances

@@ -98,3 +98,37 @@ def test_query_all_table_rows(db, Author):
     assert type(authors[0]) == Author
     assert {a.age for a in authors} == {20, 21}
     assert {a.name for a in authors} == {"Bob Smith", "Sally Smith"}
+
+
+def test_get_single_result(db, Author):
+    db.create(Author)
+    bob = Author(name="Bob Smith", age=20)
+    sally = Author(name="Sally Smith", age=21)
+    db.save(bob)
+    db.save(sally)
+    authors = db.get(Author, name="Sally Smith")
+
+    assert Author.get_filtered_select(name="Sally Smith") == (
+        "SELECT id, age, name FROM author WHERE name = ?;",
+        ["id", "age", "name"],
+        ["Sally Smith"],
+    )
+    assert len(authors) == 1
+    assert authors[0].name == "Sally Smith"
+    assert authors[0].id == 2
+
+
+def test_get_no_result(db, Author):
+    db.create(Author)
+    bob = Author(name="Bob Smith", age=20)
+    sally = Author(name="Sally Smith", age=21)
+    db.save(bob)
+    db.save(sally)
+    authors = db.get(Author, id=10)
+
+    assert Author.get_filtered_select(id=10) == (
+        "SELECT id, age, name FROM author WHERE id = ?;",
+        ["id", "age", "name"],
+        [10],
+    )
+    assert len(authors) == 0
