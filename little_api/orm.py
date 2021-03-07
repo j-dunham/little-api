@@ -1,5 +1,6 @@
 import inspect
 import sqlite3
+from typing import List, Type
 
 SQLITE_TYPE_MAP = {
     int: "INTEGER",
@@ -8,27 +9,6 @@ SQLITE_TYPE_MAP = {
     bytes: "BLOB",
     bool: "INTEGER",
 }
-
-
-class Database:
-    def __init__(self, path):
-        self.conn = sqlite3.Connection(path)
-
-    def create(self, table):
-        self.conn.execute(table.get_create_sql())
-
-    @property
-    def tables(self):
-        rows = self.conn.execute(
-            "SELECT name FROM sqlite_master WHERE type = 'table';"
-        ).fetchall()
-        return [row[0] for row in rows]
-
-    def save(self, instance):
-        sql, values = instance.get_insert_sql()
-        inserted_id = self.conn.execute(sql, values)
-        instance._column_data["id"] = inserted_id
-        self.conn.commit()
 
 
 class Table:
@@ -84,6 +64,19 @@ class Table:
         )
         return sql, values
 
+    @classmethod
+    def get_select_all_sql(cls):
+        select_sql = "SELECT {fields} FROM {name};"
+        table_name = cls.__name__.lower()
+        fields = ["id"]
+        for name, field in inspect.getmembers(cls):
+            if isinstance(field, Column):
+                fields.append(name)
+            if isinstance(field, ForeignKey):
+                fields.append(f"{name}_id")
+        sql = select_sql.format(fields=", ".join(fields), name=table_name)
+        return sql, fields
+
 
 class Column:
     def __init__(self, column_type):
@@ -95,5 +88,37 @@ class Column:
 
 
 class ForeignKey:
-    def __init__(self, table):
+    def __init__(self, table: Table):
         self.table = table
+
+
+class Database:
+    def __init__(self, path: str):
+        self.conn = sqlite3.Connection(path)
+
+    def create(self, table: Table):
+        self.conn.execute(table.get_create_sql())
+
+    @property
+    def tables(self) -> List[Table]:
+        rows = self.conn.execute(
+            "SELECT name FROM sqlite_master WHERE type = 'table';"
+        ).fetchall()
+        return [row[0] for row in rows]
+
+    def save(self, table: Table) -> None:
+        sql, values = table.get_insert_sql()
+        result = self.conn.execute(sql, values)
+        table._column_data["id"] = result.lastrowid
+        self.conn.commit()
+
+    def all(self, table: Type[Table]) -> List:
+        sql, fields = table.get_select_all_sql()
+        rows = self.conn.execute(sql).fetchall()
+        results = []
+        for row in rows:
+            instance = table()
+            for field, value in zip(fields, row):
+                setattr(instance, field, value)
+            results.append(instance)
+        return results

@@ -80,3 +80,21 @@ def test_table_save(db, Author):
     db.save(author)
 
     assert author.id is not None
+
+
+def test_query_all_table_rows(db, Author):
+    db.create(Author)
+    bob = Author(name="Bob Smith", age=20)
+    sally = Author(name="Sally Smith", age=21)
+    db.save(bob)
+    db.save(sally)
+    authors = db.all(Author)
+
+    assert Author.get_select_all_sql() == (
+        "SELECT id, age, name FROM author;",
+        ["id", "age", "name"],
+    )
+    assert len(authors) == 2
+    assert type(authors[0]) == Author
+    assert {a.age for a in authors} == {20, 21}
+    assert {a.name for a in authors} == {"Bob Smith", "Sally Smith"}
