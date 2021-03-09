@@ -147,3 +147,26 @@ def test_foreign_key_result(db, Book, Author):
     assert len(books) == 1
     assert books[0].author.name == "Bob"
     assert books[0].author.age == 50
+
+
+def test_db_update(db, Author):
+    db.create(Author)
+    author = Author(name="Bob Smith", age=20)
+    db.save(author)
+    author = db.get(Author, name="Bob Smith")[0]
+    assert author.age == 20
+
+    author.age = 50
+    db.update(author)
+    author = db.get(Author, name="Bob Smith")[0]
+    assert author.age == 50
+
+
+def test_db_delete(db, Author):
+    db.create(Author)
+    author = Author(name="Bob Smith", age=20)
+    db.save(author)
+    db.delete(author)
+
+    author = db.get(Author, id=author.id)
+    assert not author

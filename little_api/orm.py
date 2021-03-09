@@ -60,12 +60,31 @@ class Table:
                 fields.append(name + "_id")
                 values.append(getattr(self, name).id)
                 placeholders.append("?")
-
         fields = ", ".join(fields)
         placeholders = ", ".join(placeholders)
         table_name = cls.__name__.lower()
         sql = insert_sql.format(
             name=table_name, fields=fields, placeholders=placeholders
+        )
+        return sql, values
+
+    def get_update_sql(self):
+        sql = "UPDATE {name} SET {fields} WHERE id = ?"
+        cls = self.__class__
+        fields = []
+        values = []
+        for name, field in inspect.getmembers(cls):
+            if isinstance(field, Column) and field != "id":
+                fields.append(name)
+                values.append(getattr(self, name))
+            if isinstance(field, ForeignKey):
+                fields.append(f"{name}_id")
+                values.append(getattr(self, name).id)
+        values.append(getattr(self, "id"))
+
+        sql = sql.format(
+            name=cls.__name__.lower(),
+            fields=", ".join([f"{field} = ?" for field in fields]),
         )
         return sql, values
 
@@ -126,10 +145,15 @@ class Database:
         ).fetchall()
         return [row[0] for row in rows]
 
-    def save(self, table: Table) -> None:
-        sql, values = table.get_insert_sql()
+    def save(self, instance: Table) -> None:
+        sql, values = instance.get_insert_sql()
         result = self.conn.execute(sql, values)
-        table._column_data["id"] = result.lastrowid
+        instance._column_data["id"] = result.lastrowid
+        self.conn.commit()
+
+    def update(self, instance: Table) -> None:
+        sql, values = instance.get_update_sql()
+        self.conn.execute(sql, values)
         self.conn.commit()
 
     def generate_instances(self, rows, fields, table):
@@ -158,3 +182,9 @@ class Database:
         rows = self.conn.execute(sql, tuple(values)).fetchall()
         instances = self.generate_instances(rows, fields, table)
         return instances
+
+    def delete(self, instance: Table):
+        sql = f"DELETE from {instance.__class__.__name__.lower()} where id = ?"
+        values = [instance.id]
+        self.conn.execute(sql, values)
+        self.conn.commit()
