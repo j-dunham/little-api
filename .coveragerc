@@ -1,2 +1,2 @@
 [run]
-omit = venv/*,*/tests/*,slow_api/app.py
+omit = venv/*,*/tests/*,little_api/debug_server.py,
