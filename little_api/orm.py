@@ -1,5 +1,6 @@
 import inspect
 import sqlite3
+from datetime import datetime
 from typing import List, Type
 
 SQLITE_TYPE_MAP = {
@@ -8,6 +9,7 @@ SQLITE_TYPE_MAP = {
     str: "TEXT",
     bytes: "BLOB",
     bool: "INTEGER",
+    datetime: "DATETIME",
 }
 
 

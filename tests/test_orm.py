@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from datetime import datetime
 
 import pytest
 
@@ -30,6 +31,7 @@ def Book(Author):
         title = Column(str)
         published = Column(bool)
         author = ForeignKey(Author)
+        created_at = Column(datetime)
 
     yield Book
 
@@ -59,7 +61,7 @@ def test_create_table(db, Author, Book):
     )
     assert (
         Book.get_create_sql() == "CREATE TABLE IF NOT EXISTS book (id INTEGER "
-        "PRIMARY KEY AUTOINCREMENT, author_id INTEGER, "
+        "PRIMARY KEY AUTOINCREMENT, author_id INTEGER, created_at DATETIME, "
         "published INTEGER, title TEXT);"
     )
     for table in ("author", "book"):
@@ -139,7 +141,9 @@ def test_foreign_key_result(db, Book, Author):
     db.create(Book)
 
     bob = Author(name="Bob", age=50)
-    book = Book(title="Bob's Book", published=True, author=bob)
+    book = Book(
+        title="Bob's Book", published=True, author=bob, created_at=datetime.now()
+    )
     db.save(bob)
     db.save(book)
 
