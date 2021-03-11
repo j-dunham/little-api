@@ -31,7 +31,7 @@ def Book(Author):
         title = Column(str)
         published = Column(bool)
         author = ForeignKey(Author)
-        created_at = Column(datetime)
+        created_at = Column(datetime, "now")
 
     yield Book
 
@@ -61,7 +61,8 @@ def test_create_table(db, Author, Book):
     )
     assert (
         Book.get_create_sql() == "CREATE TABLE IF NOT EXISTS book (id INTEGER "
-        "PRIMARY KEY AUTOINCREMENT, author_id INTEGER, created_at DATETIME, "
+        "PRIMARY KEY AUTOINCREMENT, author_id INTEGER, created_at DATETIME"
+        " DEFAULT CURRENT_TIMESTAMP, "
         "published INTEGER, title TEXT);"
     )
     for table in ("author", "book"):
@@ -141,9 +142,7 @@ def test_foreign_key_result(db, Book, Author):
     db.create(Book)
 
     bob = Author(name="Bob", age=50)
-    book = Book(
-        title="Bob's Book", published=True, author=bob, created_at=datetime.now()
-    )
+    book = Book(title="Bob's Book", published=True, author=bob, created_at=None)
     db.save(bob)
     db.save(book)
 

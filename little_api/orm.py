@@ -12,6 +12,8 @@ SQLITE_TYPE_MAP = {
     datetime: "DATETIME",
 }
 
+SQLITE_DEFAULT_MAP = {"now": "DEFAULT CURRENT_TIMESTAMP"}
+
 
 class Table:
     def __init__(self, **kwargs):
@@ -38,7 +40,10 @@ class Table:
         fields = ["id INTEGER PRIMARY KEY AUTOINCREMENT"]
         for name, field in inspect.getmembers(cls):
             if isinstance(field, Column):
-                fields.append(f"{name} {field.sql_type}")
+                column_statement = f"{name} {field.sql_type}"
+                if field.default is not None:
+                    column_statement += f" {field.default}"
+                fields.append(column_statement)
             elif isinstance(field, ForeignKey):
                 fields.append(f"{name}_id INTEGER")
         fields = ", ".join(fields)
@@ -54,10 +59,11 @@ class Table:
         # Get column definitions off of class
         for name, field in inspect.getmembers(cls):
             if isinstance(field, Column):
-                fields.append(name)
-                # Get values off of instance
-                values.append(getattr(self, name))
-                placeholders.append("?")
+                # Get values off of instance if not None
+                if getattr(self, name) is not None:
+                    fields.append(name)
+                    values.append(getattr(self, name))
+                    placeholders.append("?")
             elif isinstance(field, ForeignKey):
                 fields.append(name + "_id")
                 values.append(getattr(self, name).id)
@@ -120,12 +126,17 @@ class Table:
 
 
 class Column:
-    def __init__(self, column_type):
+    def __init__(self, column_type, default=None):
         self.type = column_type
+        self._default = default
 
     @property
     def sql_type(self):
         return SQLITE_TYPE_MAP[self.type]
+
+    @property
+    def default(self):
+        return SQLITE_DEFAULT_MAP.get(self._default)
 
 
 class ForeignKey:
