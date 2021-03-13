@@ -1,10 +1,19 @@
 import re
+from crypt import crypt
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
 import jwt
 
 from little_api.middleware import Middleware
+
+
+def generate_password_hash(password: str) -> str:
+    return crypt(password)
+
+
+def check_password(password: str, hashed_password: str) -> bool:
+    return crypt(password, hashed_password) == hashed_password
 
 
 class TokenMiddleware(Middleware):
