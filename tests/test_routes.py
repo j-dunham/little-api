@@ -102,7 +102,7 @@ def test_allowed_methods_for_function_based_handler(api, client):
 
 
 def test_jwt_login_route(api, client):
-    payload = {"user": "maddie"}
+    payload = {"user": "larry"}
 
     def validate_user(request):
         return payload

@@ -148,7 +148,7 @@ class Database:
     def __init__(self, path: str):
         self.conn = sqlite3.Connection(path)
 
-    def create(self, table: Table):
+    def create(self, table: Type[Table]):
         self.conn.execute(table.get_create_sql())
 
     @property
