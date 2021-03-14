@@ -89,3 +89,15 @@ def test_after_response(api, client):
     res = client.get(f"{BASE_URL}/home")
     assert res.json()["data"] == payload
     assert res.json()["success"] is True
+
+
+def test_custom_response_header(api, client):
+    @api.route("/header")
+    def header(req, resp):
+        resp.headers["Access-Control-Allow-Origin"] = "*"
+        resp.json = {"message": "headers!"}
+
+    response = client.get(f"{BASE_URL}/header")
+
+    assert response.headers["Content-Type"] == "application/json"
+    assert response.headers["Access-Control-Allow-Origin"] == "*"

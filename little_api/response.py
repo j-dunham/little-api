@@ -11,6 +11,7 @@ class Response:
         self.content_type = None
         self.body = b""
         self.status_code = 200
+        self.headers = {}
 
     def set_body_and_content_type(self):
         if self.json is not None:
@@ -29,4 +30,5 @@ class Response:
         response = WebObResponse(
             body=self.body, content_type=self.content_type, status=self.status_code
         )
+        response.headers.update(self.headers)
         return response(environ, start_response)
