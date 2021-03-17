@@ -16,9 +16,6 @@ class User(Table):
     created_at = Column(datetime)
 
 
-db.create(User)
-
-
 def enable_jwt(api: API) -> None:
     def validate_user(request: Request):
         user = db.get(User, user_name=request.json["user_name"])
@@ -32,6 +29,7 @@ def enable_jwt(api: API) -> None:
 
 
 enable_jwt(app)
+db.create(User)
 
 
 @app.after_request
@@ -65,6 +63,7 @@ def create_user(request, response):
 
 
 if __name__ == "__main__":
-    from little_api.debug_server import DebugServer
+    from wsgiref.simple_server import make_server
 
-    DebugServer(application=app, port=8080).run()
+    server = make_server("localhost", 8080, app=app)
+    server.serve_forever()

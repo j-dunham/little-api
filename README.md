@@ -42,13 +42,12 @@ def template_render(req: Request, resp: Response):
 
 ```
 
-## Running with DebugServer
-little-api has a wrapper around the gunicorn server to allow for easier debugging
-
+## Debugging with builtin simple_server
 ```python
 if __name__ == "__main__":
-    from little_api.debug_server import DebugServer
-    DebugServer(application=app, port=8080).run()
+    from wsgiref.simple_server import make_server
+    server = make_server('localhost', 8083, app=app)
+    server.serve_forever()
 ```
 
 ## Running with Gunicorn
