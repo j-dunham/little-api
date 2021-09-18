@@ -41,6 +41,11 @@ def after_response(request, response):
         }
 
 
+@app.route("/info")
+def home(request, response):
+    response.json = {"name": "little-api"}
+
+
 @app.route("/user/{user_id:d}", allowed_methods=["get"])
 def user_detail(request, response, user_id):
     user = db.get(User, id=user_id)
