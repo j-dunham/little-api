@@ -82,7 +82,7 @@ class API:
         return wrapper
 
     def find_handler(self, request_path: str) -> Tuple:
-        """ Finds handler for a given url path"""
+        """Finds handler for a given url path"""
         for path, handler_data in self.routes.items():
             parse_result = parse(path, request_path)
             if parse_result is not None:

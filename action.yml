@@ -1,0 +1,5 @@
+name: "Run Server"
+description: "Runs example server for testing operation"
+runs:
+  using: Docker
+  image: Dockerfile
