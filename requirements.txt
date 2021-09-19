@@ -16,3 +16,4 @@ mypy
 pytest
 pytest-cov
 flake8
+types-requests
