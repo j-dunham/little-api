@@ -2,6 +2,7 @@
 
 ![PyPI](https://img.shields.io/pypi/v/little-api.svg)
 [![CI](https://github.com/j-dunham/little-api/actions/workflows/python-app.yml/badge.svg)](https://github.com/j-dunham/little-api/actions/workflows/python-app.yml)
+[![Test Example Server](https://github.com/j-dunham/little-api/actions/workflows/test_example_server.yml/badge.svg)](https://github.com/j-dunham/little-api/actions/workflows/test_example_server.yml)
 
 It's a WSGI framework and can be used with any WSGI application server such as Gunicorn.
 
