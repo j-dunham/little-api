@@ -15,7 +15,7 @@ VERSION = "0.0.2"
 REQUIRED = [
     "Jinja2==2.11.3",
     "parse==1.12.1",
-    "requests==2.22.0",
+    "requests==2.31.0",
     "requests-wsgi-adapter==0.4.1",
     "WebOb==1.8.5",
     "whitenoise==4.1.4",
