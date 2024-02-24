@@ -1,11 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>{{ title }}</title>
-    <link href="static/main.css" type="text/css" rel="stylesheet">
+    <title>Little Urly</title>
+    <link href="../static/main.css" type="text/css" rel="stylesheet">
+    <link href="../static/main.css" type="text/css" rel="stylesheet">
+    <link href="../static/main.css" type="text/css" rel="stylesheet">
 </head>
+
 <body>
-    <h1>The name of the framework is {{ name }}</h1>
+    <div class="container">
+        <div class="hero">
+            <h1>Little Urly</h1>
+            <h2>The Url Shortner, the Shorter, the Better.</h2>
+        </div>
+    </div>
+    <div class="content-area">
+    <div class="content-text-area">
+        <h2>Shorten your links</h2>
+         <p>Sick of those mile-long links? Meet Little Urly, your shortcut to shareable greatness. Paste your URL, and we'll shrink it down to size!</p>
+    </div>
+    <div class="content-input-area">
+        <form action="/shorten" method="post">
+            <input type="text" name="url" placeholder="Enter a URL to shorten">
+            <input type="submit" value="Shorten">
+        </form>
+    </div>
+    </div>
+    <footer class="footer-area">
+        <p>© 2024 Fervor Life LLC. All Rights Reserved.
+        </p>
+        <p> FervorWorking@gmail.com</p>
+    </footer >
+    </div>
 </body>
+
 </html>
