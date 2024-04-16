@@ -20,7 +20,7 @@ REQUIRED = [
     "WebOb==1.8.5",
     "whitenoise==4.1.4",
     'pyjwt==2.4.0',
-    "gunicorn==20.0.4",
+    "gunicorn==21.2.0",
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
