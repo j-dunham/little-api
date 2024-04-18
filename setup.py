@@ -14,7 +14,7 @@ VERSION = "0.0.2"
 # Which packages are required for this module to be executed?
 REQUIRED = [
     "Jinja2==3.1.3",
-    "parse==1.12.1",
+    "parse==1.20.1",
     "requests==2.31.0",
     "requests-wsgi-adapter==0.4.1",
     "WebOb==1.8.5",
