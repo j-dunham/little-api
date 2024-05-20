@@ -13,7 +13,7 @@ VERSION = "0.0.2"
 
 # Which packages are required for this module to be executed?
 REQUIRED = [
-    "Jinja2==3.1.3",
+    "Jinja2==3.1.4",
     "parse==1.20.1",
     "requests==2.32.0",
     "requests-wsgi-adapter==0.4.1",
