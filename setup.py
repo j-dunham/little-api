@@ -19,7 +19,7 @@ REQUIRED = [
     "requests-wsgi-adapter==0.4.1",
     "WebOb==1.8.8",
     "whitenoise==6.8.2",
-    'pyjwt==2.8.0',
+    'pyjwt==2.10.0',
     "gunicorn==23.0.0",
 ]
 
